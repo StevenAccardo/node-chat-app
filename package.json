@@ -7,7 +7,9 @@
     "node": "10.2.1"
   },
   "scripts": {
-    "start": "node server/index.js"
+    "start": "node server/index.js",
+    "test": "mocha server/**/*.test.js",
+    "test-watch": "nodemon --exec 'npm test'"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,8 @@
     "socket.io": "^2.1.1"
   },
   "devDependencies": {
+    "expect": "^23.4.0",
+    "mocha": "^5.2.0",
     "nodemon": "^1.18.3"
   }
 }
