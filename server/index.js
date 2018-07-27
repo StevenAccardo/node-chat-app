@@ -19,9 +19,6 @@ io.on('connection', socket => {
   console.log('New user connected');
 
   socket.on('join', ({ name, room }, callback) => {
-    console.log(isRealString(name));
-    console.log(isRealString(room));
-    console.log(name, room);
     if (!isRealString(name) || !isRealString(room)) {
       return callback('Name and room name are required.');
     }
@@ -36,14 +33,22 @@ io.on('connection', socket => {
     callback();
   });
 
-  socket.on('createMessage', (message, callback) => {
-    console.log('createMessage', message);
-    io.emit('newMessage', generateMessage(message.from, message.text));
+  socket.on('createMessage', ({ text }, callback) => {
+    const user = users.getUser(socket.id);
+
+    if (user && isRealString(text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, text));
+    }
+
     callback();
   });
 
   socket.on('createLocationMessage', ({ lat, lon }) => {
-    io.emit('newLocationMessage', generateLoctionMessage('Admin', lat, lon));
+    const user = users.getUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLoctionMessage(user.name, lat, lon));
+    }
   });
 
   socket.on('disconnect', () => {
